@@ -1,6 +1,6 @@
 # Nyan Cat Progress Bar Port
 
-> Fork of [kitbodega/SpotiKit](https://github.com/kitbodega/Nyan-Cat-Progress-Bar-Port).   
+> Fork of [kitbodega/Nyan-Cat-Progress-Bar-Port](https://github.com/kitbodega/Nyan-Cat-Progress-Bar-Port).   
 > **Recommended userscript manager:** [Violentmonkey](https://violentmonkey.github.io/) or [Tampermonkey](https://www.tampermonkey.net/)   
 >
 > This project is a port of Spicetify's Nyan Cat playback progress bar theme for Spotify Web, adapted for userscript environment.     
