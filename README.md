@@ -1,7 +1,6 @@
 # Nyan Cat Progress Bar Port
 
-A faithful port of Spicetify's **Nyan Cat** playback progress bar for Spotify Web.
+This project is a port of Spicetify's Nyan Cat playback progress bar theme for Spotify Web, adapted for userscript environment.    
+It adds a Nyan Cat themed progress bar to Spotify, enhancing the visual representation of song progress and volume levels.     
 
-This project reimplements the original desktop customization by adapting its styling, assets, and DOM integration to Spotify Web, delivering the same visual experience as a standalone Tampermonkey userscript without requiring Spicetify or the Electron-based desktop client.
-
-[Preview](https://files.catbox.moe/9u5boo.mp4)
+Myst1cX's fork includes fixes for compatibility with the fork author's Spotify Web Lyrics+ userscript and ensures that the progress bar's appearance remains consistent even with changes in Spotify's DOM structure.   
