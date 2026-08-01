@@ -13,6 +13,8 @@
 // @downloadURL  https://raw.githubusercontent.com/kitbodega/Nyan-Cat-Progress-Bar-Port/main/Spotify-Nyan_bar.user.js
 // ==/UserScript==
 
+// kitbodega/Nyan-Cat-Progress-Bar-Port: backup of original version, no changes made
+
 (function() {
     'use strict';
 
