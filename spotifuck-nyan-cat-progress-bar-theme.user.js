@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Spotifuck - Nyan Cat Progress Bar (Adapted from Spicetify)
 // @icon         https://i.ibb.co/YF1nLPfK/2eca7229-ca6a-4ad6-8653-b80a6a0f8586.png
-// @namespace    https://github.com/kitbodega/Nyan-Cat-Progress-Bar-Port
+// @namespace    https://github.com/Myst1cX/Nyan-Cat-Progress-Bar-Port
 // @version      1.0.0.fork
 // @description  Nyan Cat Progress Bar Theme for Spotify
 // @author       kitbodega, Myst1cX (fork)
@@ -13,6 +13,18 @@
 // @updateURL    https://raw.githubusercontent.com/Myst1cX/Nyan-Cat-Progress-Bar-Port/main/spotifuck-nyan-cat-progress-bar-theme.user.js
 // @downloadURL  https://raw.githubusercontent.com/Myst1cX/Nyan-Cat-Progress-Bar-Port/main/spotifuck-nyan-cat-progress-bar-theme.user.js
 // ==/UserScript==
+
+// VOLUME BAR FIX ON TOP OF ORIGINAL SCRIPT:
+// Song progress bar worked fine. Volume slider showed the cat + stars (right
+// side) correctly because those come from static CSS on [data-testid="progress-bar-
+// background"], which matches EVERY bar on the page. But the rainbow fill (left of
+// cat) is set by JS in applyRainbowToFill(), which used document.querySelector(...)
+// — singular, so it only ever grabbed the FIRST matching element in the DOM (the
+// song bar) and tagged its inner div data-nyancat="1" for the rainbow rule. The
+// volume bar's inner div never got that attribute, so it kept Spotify's default
+// green/white fill. Changed querySelector -> querySelectorAll + forEach so every
+// bar gets tagged, and added a static CSS rule under [data-testid="volume-bar"] as
+// a backup in case the DOM structure changes again.
 
 // COMPATIBILITY WITH LYRICS+ SCRIPT:
 // a) Lyrics+ popup seekbar support (pairs with Lyrics+ v17.51's rebuilt,
@@ -48,18 +60,6 @@
 // native bar. Entirely additive and self-gating: if Lyrics+ isn't installed or its
 // seekbar isn't open, #lyrics-plus-progress doesn't exist and every rule/poll here
 // is a no-op.
-
-// VOLUME BAR FIX ON TOP OF ORIGINAL SCRIPT:
-// Song progress bar worked fine. Volume slider showed the cat + stars (right
-// side) correctly because those come from static CSS on [data-testid="progress-bar-
-// background"], which matches EVERY bar on the page. But the rainbow fill (left of
-// cat) is set by JS in applyRainbowToFill(), which used document.querySelector(...)
-// — singular, so it only ever grabbed the FIRST matching element in the DOM (the
-// song bar) and tagged its inner div data-nyancat="1" for the rainbow rule. The
-// volume bar's inner div never got that attribute, so it kept Spotify's default
-// green/white fill. Changed querySelector -> querySelectorAll + forEach so every
-// bar gets tagged, and added a static CSS rule under [data-testid="volume-bar"] as
-// a backup in case the DOM structure changes again.
 
 (function() {
     'use strict';
