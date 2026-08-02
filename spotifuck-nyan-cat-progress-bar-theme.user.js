@@ -146,25 +146,18 @@
                 background-size: contain !important;
                 width: 34px !important;
                 height: 21px !important;
-                margin-top: 0 !important;
+                margin-top: -6.5px !important;
                 border: none !important;
                 border-radius: 0 !important;
                 box-shadow: none !important;
                 opacity: 1 !important;
                 image-rendering: pixelated !important;
-                /* translateY(-50%) instead of a hardcoded margin-top: this
-                   matches [data-testid="progress-bar-handle"]'s own centering
-                   technique above, which is self-referential (based on the
-                   thumb's own height) rather than assuming a specific default
-                   browser alignment of the thumb against the track - that
-                   default is exactly the kind of thing that can differ
-                   between Chromium builds/versions (desktop Chrome vs Android
-                   WebView), which a fixed pixel margin can't self-correct for.
-                   Also means this no longer needs recalculating separately for
-                   the 8px/12px hover height change below - it stays centered
-                   automatically either way. */
-                transform: translateY(-50%) scale(0.8) !important;
-                transition: transform 0.1s cubic-bezier(0, 0, 0.2, 1) !important;
+                transform: scale(0.8) !important;
+                transition: margin-top 0.1s cubic-bezier(0, 0, 0.2, 1) !important;
+            }
+            #lyrics-plus-progress:hover::-webkit-slider-thumb,
+            #lyrics-plus-progress:focus::-webkit-slider-thumb {
+                margin-top: -4.5px !important;
             }
             #lyrics-plus-progress::-moz-range-thumb {
                 background: ${SLIDER_IMG} !important;
