@@ -14,22 +14,6 @@
 // @downloadURL  https://raw.githubusercontent.com/Myst1cX/Nyan-Cat-Progress-Bar-Port/main/spotifuck-nyan-cat-progress-bar-theme.user.js
 // ==/UserScript==
 
-// UPDATE 6: LYRICS+ BAR LENGTH MATCH
-// Lyrics+'s seekbar rendered a few px longer than the native progress bar -
-// CSS-only fixes (width:100%, box-sizing:border-box) either under- or
-// overshot it, since the two bars sit in different layout contexts with box-
-// model differences that aren't obvious from source alone. Measured both
-// directly in the live page via devtools console:
-//   console.log(
-//     'native:', document.querySelector('[data-testid="progress-bar"]').getBoundingClientRect().width,
-//     'lyrics+:', document.getElementById('lyrics-plus-progress').getBoundingClientRect().width
-//   );
-// Result: native 606px vs Lyrics+ 612px (6px too long). Hardcoded
-// #lyrics-plus-progress to width:606px to match. Note this is a fixed value,
-// not computed live - if the native bar's width ever changes (different
-// window size, Spotify layout change, etc.) this won't track it and would
-// need to be re-measured.
-
 // UPDATE 5: THUMB HORIZONTAL POSITION FIX
 // Native range-input thumbs are positioned by the browser using their *declared* CSS
 // width, before any transform is applied - transforms only affect the rendered pixels,
@@ -181,9 +165,6 @@
                unplayed remainder still shows stars. !important is required to win
                over Lyrics+'s own inline "background" it sets via JS. */
             #lyrics-plus-progress {
-                /* UPDATE 6: hardcoded to match native bar's measured 606px
-                   (native was 606px, Lyrics+ was rendering at 612px) */
-                width: 606px !important;
                 --nyan-fill: 0%;
                 background-image: ${RAINBOW}, ${BG_PATTERN} !important;
                 background-size: var(--nyan-fill) 100%, auto 100% !important;
