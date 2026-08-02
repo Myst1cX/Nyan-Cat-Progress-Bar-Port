@@ -2,7 +2,7 @@
 // @name         Spotifuck - Nyan Cat Progress Bar (Adapted from Spicetify)
 // @icon         https://i.ibb.co/YF1nLPfK/2eca7229-ca6a-4ad6-8653-b80a6a0f8586.png
 // @namespace    https://github.com/Myst1cX/Nyan-Cat-Progress-Bar-Port
-// @version      1.0.0.fork
+// @version      1.0.1.fork
 // @description  Nyan Cat Progress Bar Theme for Spotify
 // @author       kitbodega, Myst1cX (fork)
 // @match        https://open.spotify.com/*
@@ -13,6 +13,18 @@
 // @updateURL    https://raw.githubusercontent.com/Myst1cX/Nyan-Cat-Progress-Bar-Port/main/spotifuck-nyan-cat-progress-bar-theme.user.js
 // @downloadURL  https://raw.githubusercontent.com/Myst1cX/Nyan-Cat-Progress-Bar-Port/main/spotifuck-nyan-cat-progress-bar-theme.user.js
 // ==/UserScript==
+
+// UPDATE 3: LYRICS+ THUMB CENTERING FIX
+// Lyrics+ 17.52 pinned #lyrics-plus-progress's ::-webkit-slider-runnable-track/
+// ::-moz-range-track to a fixed 4px so every browser computes the thumb's
+// margin-top against the same known box (see that script's own changelog).
+// This theme's Update 1 sets the *input's own* height to 8px (resting) / 12px
+// (hover) with thumb margin-top -6.5px/-4.5px - correct math for an 8px/12px
+// track box, but it never re-pinned the track pseudo-elements to match, so the
+// browser was still centering against Lyrics+'s 4px pin underneath. Added
+// ::-webkit-slider-runnable-track/::-moz-range-track rules mirroring this
+// theme's own 8px/12px height values, so the box the thumb centers against
+// actually matches the numbers the margin-top math assumes.
 
 // UPDATE 2: VOLUME BAR FIX ON TOP OF ORIGINAL SCRIPT:
 // Song progress bar worked fine. Volume slider showed the cat + stars (right
@@ -139,6 +151,29 @@
             }
             #lyrics-plus-progress:hover,
             #lyrics-plus-progress:focus {
+                height: 12px !important;
+            }
+            /* UPDATE 3: THUMB CENTERING FIX
+               Lyrics+ 17.52 pinned ::-webkit-slider-runnable-track/::-moz-range-track to a
+               fixed 4px so the browser's thumb-centering math has a known box to work
+               against (see that script's changelog). This theme sets the *input's own*
+               height to 8px/12px above, but never pinned the track pseudo-elements to
+               match - so the browser was still centering the thumb against Lyrics+'s 4px
+               pin while these margin-top values (-6.5px/-4.5px) were computed assuming an
+               8px/12px box, producing exactly the kind of top/bottom offset reported
+               against real 8px/12px track boxes. */
+            #lyrics-plus-progress::-webkit-slider-runnable-track {
+                height: 8px !important;
+            }
+            #lyrics-plus-progress:hover::-webkit-slider-runnable-track,
+            #lyrics-plus-progress:focus::-webkit-slider-runnable-track {
+                height: 12px !important;
+            }
+            #lyrics-plus-progress::-moz-range-track {
+                height: 8px !important;
+            }
+            #lyrics-plus-progress:hover::-moz-range-track,
+            #lyrics-plus-progress:focus::-moz-range-track {
                 height: 12px !important;
             }
             #lyrics-plus-progress::-webkit-slider-thumb {
