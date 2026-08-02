@@ -14,7 +14,20 @@
 // @downloadURL  https://raw.githubusercontent.com/Myst1cX/Nyan-Cat-Progress-Bar-Port/main/spotifuck-nyan-cat-progress-bar-theme.user.js
 // ==/UserScript==
 
-// VOLUME BAR FIX ON TOP OF ORIGINAL SCRIPT:
+// UPDATE 3: RUNNABLE-TRACK PINNING (PAIRS WITH LYRICS+ v17.52):
+// Lyrics+'s own #lyrics-plus-progress track was flat 4px prior to its 17.52 fix - half
+// this script's 8px/12px, which this script's own margin-top values (-6.5px/-4.5px) were
+// already computed against, since those were reverse-engineered to match Spotify's real
+// bar rather than derived from Lyrics+'s own (wrong, at the time) numbers. Lyrics+ 17.52
+// corrected its base track height to match, so no change was needed here for that fix to
+// take effect. Added purely for robustness: explicit height on
+// ::-webkit-slider-runnable-track/::-moz-range-track at both the 8px resting and 12px
+// hover/focus states, same reasoning as Lyrics+'s own 17.52 fix - only the <input>'s
+// height was ever set here too, and the runnable-track is a separate anonymous box that
+// doesn't necessarily inherit it, so this closes the same ambiguity on this script's side
+// as well.
+
+// UPDATE 2: VOLUME BAR FIX ON TOP OF ORIGINAL SCRIPT:
 // Song progress bar worked fine. Volume slider showed the cat + stars (right
 // side) correctly because those come from static CSS on [data-testid="progress-bar-
 // background"], which matches EVERY bar on the page. But the rainbow fill (left of
@@ -26,7 +39,7 @@
 // bar gets tagged, and added a static CSS rule under [data-testid="volume-bar"] as
 // a backup in case the DOM structure changes again.
 
-// COMPATIBILITY WITH LYRICS+ SCRIPT:
+// UPDATE 1: COMPATIBILITY WITH LYRICS+ SCRIPT:
 // a) Lyrics+ popup seekbar support (pairs with Lyrics+ v17.51's rebuilt,
 // native-style progress bar - see that script's RESOLVED (17.51) entry). Lyrics+
 // used to have a flat, always-green seekbar; 17.51 replaced it with one that mimics
@@ -139,6 +152,27 @@
             }
             #lyrics-plus-progress:hover,
             #lyrics-plus-progress:focus {
+                height: 12px !important;
+            }
+            /* Pin the runnable-track pseudo-elements to the same explicit heights,
+               so the browser's internal thumb-position reference isn't left to an
+               unstyled default at either size. */
+            #lyrics-plus-progress::-webkit-slider-runnable-track {
+                height: 8px !important;
+                background: transparent !important;
+                border: none !important;
+            }
+            #lyrics-plus-progress:hover::-webkit-slider-runnable-track,
+            #lyrics-plus-progress:focus::-webkit-slider-runnable-track {
+                height: 12px !important;
+            }
+            #lyrics-plus-progress::-moz-range-track {
+                height: 8px !important;
+                background: transparent !important;
+                border: none !important;
+            }
+            #lyrics-plus-progress:hover::-moz-range-track,
+            #lyrics-plus-progress:focus::-moz-range-track {
                 height: 12px !important;
             }
             #lyrics-plus-progress::-webkit-slider-thumb {
