@@ -2,7 +2,7 @@
 // @name         Spotifuck - Nyan Cat Progress Bar (Adapted from Spicetify)
 // @icon         https://i.ibb.co/YF1nLPfK/2eca7229-ca6a-4ad6-8653-b80a6a0f8586.png
 // @namespace    https://github.com/Myst1cX/Nyan-Cat-Progress-Bar-Port
-// @version      1.0.1.fork
+// @version      1.0.2.fork
 // @description  Nyan Cat Progress Bar Theme for Spotify
 // @author       kitbodega, Myst1cX (fork)
 // @match        https://open.spotify.com/*
@@ -13,18 +13,6 @@
 // @updateURL    https://raw.githubusercontent.com/Myst1cX/Nyan-Cat-Progress-Bar-Port/main/spotifuck-nyan-cat-progress-bar-theme.user.js
 // @downloadURL  https://raw.githubusercontent.com/Myst1cX/Nyan-Cat-Progress-Bar-Port/main/spotifuck-nyan-cat-progress-bar-theme.user.js
 // ==/UserScript==
-
-// UPDATE 3: LYRICS+ THUMB CENTERING FIX
-// Lyrics+ 17.52 pinned #lyrics-plus-progress's ::-webkit-slider-runnable-track/
-// ::-moz-range-track to a fixed 4px so every browser computes the thumb's
-// margin-top against the same known box (see that script's own changelog).
-// This theme's Update 1 sets the *input's own* height to 8px (resting) / 12px
-// (hover) with thumb margin-top -6.5px/-4.5px - correct math for an 8px/12px
-// track box, but it never re-pinned the track pseudo-elements to match, so the
-// browser was still centering against Lyrics+'s 4px pin underneath. Added
-// ::-webkit-slider-runnable-track/::-moz-range-track rules mirroring this
-// theme's own 8px/12px height values, so the box the thumb centers against
-// actually matches the numbers the margin-top math assumes.
 
 // UPDATE 2: VOLUME BAR FIX ON TOP OF ORIGINAL SCRIPT:
 // Song progress bar worked fine. Volume slider showed the cat + stars (right
@@ -72,6 +60,31 @@
 // native bar. Entirely additive and self-gating: if Lyrics+ isn't installed or its
 // seekbar isn't open, #lyrics-plus-progress doesn't exist and every rule/poll here
 // is a no-op.
+
+// UPDATE 3: LYRICS+ THUMB CENTERING FIX
+// Lyrics+ 17.52 pinned #lyrics-plus-progress's ::-webkit-slider-runnable-track/
+// ::-moz-range-track to a fixed 4px so every browser computes the thumb's
+// margin-top against the same known box (see that script's own changelog).
+// This theme's Update 1 sets the *input's own* height to 8px (resting) / 12px
+// (hover) with thumb margin-top -6.5px/-4.5px - correct math for an 8px/12px
+// track box, but it never re-pinned the track pseudo-elements to match, so the
+// browser was still centering against Lyrics+'s 4px pin underneath. Added
+// ::-webkit-slider-runnable-track/::-moz-range-track rules mirroring this
+// theme's own 8px/12px height values, so the box the thumb centers against
+// actually matches the numbers the margin-top math assumes.
+
+// UPDATE 4: IMMEDIATE FILL SYNC VIA data-test-position
+// applyNyanToLyricsPlus() previously derived --nyan-fill purely from the Lyrics+ bar's
+// own .value, which only reflects whatever position Lyrics+ last wrote on its own
+// ~100ms poll, then only got picked up here on this script's separate ~200ms poll -
+// up to ~300ms of combined lag before the fill visually caught up on a seek/restart,
+// most noticeable right at 0:00. Now reads data-test-position (the same authoritative
+// elapsed-ms attribute Lyrics+ 17.53 itself sources from first) directly, with
+// bar.value kept only as a fallback. Also added a MutationObserver on that attribute
+// (attributeFilter, so it's narrow) - since it's a real setAttribute call, unlike
+// Lyrics+'s .value property assignment, the observer fires the same tick Spotify
+// updates it, so the fill now updates immediately instead of waiting on the poll.
+// The 200ms poll is kept as a fallback for the moment before the popup/bar exists.
 
 (function() {
     'use strict';
@@ -215,12 +228,31 @@
      * Keeps --nyan-fill (the rainbow trail's width) in sync with the Lyrics+
      * seekbar's own playback position. No-ops if the Lyrics+ popup/seekbar isn't
      * open - that's what makes this "only if enabled".
+     *
+     * UPDATE 4: Reads position from data-test-position (the same authoritative
+     * elapsed-ms attribute Lyrics+ 17.53 itself now sources from first - see
+     * that script's own changelog) instead of the bar's .value. Previously this
+     * derived its percentage purely from bar.value, which only reflects
+     * whatever position Lyrics+ last wrote on ITS OWN ~100ms poll cycle - so a
+     * seek/restart's new position had to land in Lyrics+'s DOM first before
+     * this script's separate poll (see below) could even see it. Falls back to
+     * bar.value if the attribute isn't present/parseable yet (e.g. very first
+     * paint before Spotify has written it).
      */
     function applyNyanToLyricsPlus() {
         const bar = document.getElementById('lyrics-plus-progress');
         if (!bar) return;
         const max = Number(bar.max) || 1;
-        const val = Number(bar.value) || 0;
+
+        let val = Number(bar.value) || 0;
+        const durEl = document.querySelector('[data-testid="playback-duration"]');
+        if (durEl) {
+            const rawAttr = durEl.getAttribute('data-test-position');
+            if (rawAttr !== null && rawAttr !== '' && !isNaN(rawAttr)) {
+                val = parseInt(rawAttr, 10);
+            }
+        }
+
         const pct = Math.max(0, Math.min(100, (val / max) * 100));
         bar.style.setProperty('--nyan-fill', pct + '%');
     }
@@ -281,6 +313,22 @@
 
     // Lyrics+ sets .value via JS property assignment (not setAttribute), so it
     // never fires a MutationObserver attribute/childList event - poll instead,
-    // same cadence as Lyrics+'s own playback sync.
+    // same cadence as Lyrics+'s own playback sync. Kept as a fallback (e.g. the
+    // very first paint before the observer below has anything to attach to).
     setInterval(applyNyanToLyricsPlus, 200);
+
+    // UPDATE 4: data-test-position, unlike Lyrics+'s bar.value, IS a real DOM
+    // attribute Spotify updates via setAttribute - so a MutationObserver on it
+    // fires synchronously with Spotify's own player-state update, same tick,
+    // no polling gap. This is what actually makes the fill/thumb catch up
+    // immediately on seek/restart instead of waiting up to ~200ms for the poll
+    // above. attributeFilter keeps this narrow (this one attribute only), and
+    // applyNyanToLyricsPlus() itself already no-ops if the Lyrics+ bar isn't
+    // present, so this is harmless when the popup/seekbar is closed.
+    const dataTestPositionObserver = new MutationObserver(applyNyanToLyricsPlus);
+    dataTestPositionObserver.observe(document.documentElement, {
+        attributes: true,
+        subtree: true,
+        attributeFilter: ['data-test-position'],
+    });
 })();
