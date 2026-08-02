@@ -14,6 +14,31 @@
 // @downloadURL  https://raw.githubusercontent.com/Myst1cX/Nyan-Cat-Progress-Bar-Port/main/spotifuck-nyan-cat-progress-bar-theme.user.js
 // ==/UserScript==
 
+// UPDATE 4: IMMEDIATE FILL SYNC VIA data-test-position
+// applyNyanToLyricsPlus() previously derived --nyan-fill purely from the Lyrics+ bar's
+// own .value, which only reflects whatever position Lyrics+ last wrote on its own
+// ~100ms poll, then only got picked up here on this script's separate ~200ms poll -
+// up to ~300ms of combined lag before the fill visually caught up on a seek/restart,
+// most noticeable right at 0:00. Now reads data-test-position (the same authoritative
+// elapsed-ms attribute Lyrics+ 17.53 itself sources from first) directly, with
+// bar.value kept only as a fallback. Also added a MutationObserver on that attribute
+// (attributeFilter, so it's narrow) - since it's a real setAttribute call, unlike
+// Lyrics+'s .value property assignment, the observer fires the same tick Spotify
+// updates it, so the fill now updates immediately instead of waiting on the poll.
+// The 200ms poll is kept as a fallback for the moment before the popup/bar exists.
+
+// UPDATE 3: LYRICS+ THUMB CENTERING FIX
+// Lyrics+ 17.52 pinned #lyrics-plus-progress's ::-webkit-slider-runnable-track/
+// ::-moz-range-track to a fixed 4px so every browser computes the thumb's
+// margin-top against the same known box (see that script's own changelog).
+// This theme's Update 1 sets the *input's own* height to 8px (resting) / 12px
+// (hover) with thumb margin-top -6.5px/-4.5px - correct math for an 8px/12px
+// track box, but it never re-pinned the track pseudo-elements to match, so the
+// browser was still centering against Lyrics+'s 4px pin underneath. Added
+// ::-webkit-slider-runnable-track/::-moz-range-track rules mirroring this
+// theme's own 8px/12px height values, so the box the thumb centers against
+// actually matches the numbers the margin-top math assumes.
+
 // UPDATE 2: VOLUME BAR FIX ON TOP OF ORIGINAL SCRIPT:
 // Song progress bar worked fine. Volume slider showed the cat + stars (right
 // side) correctly because those come from static CSS on [data-testid="progress-bar-
@@ -60,31 +85,6 @@
 // native bar. Entirely additive and self-gating: if Lyrics+ isn't installed or its
 // seekbar isn't open, #lyrics-plus-progress doesn't exist and every rule/poll here
 // is a no-op.
-
-// UPDATE 3: LYRICS+ THUMB CENTERING FIX
-// Lyrics+ 17.52 pinned #lyrics-plus-progress's ::-webkit-slider-runnable-track/
-// ::-moz-range-track to a fixed 4px so every browser computes the thumb's
-// margin-top against the same known box (see that script's own changelog).
-// This theme's Update 1 sets the *input's own* height to 8px (resting) / 12px
-// (hover) with thumb margin-top -6.5px/-4.5px - correct math for an 8px/12px
-// track box, but it never re-pinned the track pseudo-elements to match, so the
-// browser was still centering against Lyrics+'s 4px pin underneath. Added
-// ::-webkit-slider-runnable-track/::-moz-range-track rules mirroring this
-// theme's own 8px/12px height values, so the box the thumb centers against
-// actually matches the numbers the margin-top math assumes.
-
-// UPDATE 4: IMMEDIATE FILL SYNC VIA data-test-position
-// applyNyanToLyricsPlus() previously derived --nyan-fill purely from the Lyrics+ bar's
-// own .value, which only reflects whatever position Lyrics+ last wrote on its own
-// ~100ms poll, then only got picked up here on this script's separate ~200ms poll -
-// up to ~300ms of combined lag before the fill visually caught up on a seek/restart,
-// most noticeable right at 0:00. Now reads data-test-position (the same authoritative
-// elapsed-ms attribute Lyrics+ 17.53 itself sources from first) directly, with
-// bar.value kept only as a fallback. Also added a MutationObserver on that attribute
-// (attributeFilter, so it's narrow) - since it's a real setAttribute call, unlike
-// Lyrics+'s .value property assignment, the observer fires the same tick Spotify
-// updates it, so the fill now updates immediately instead of waiting on the poll.
-// The 200ms poll is kept as a fallback for the moment before the popup/bar exists.
 
 (function() {
     'use strict';
