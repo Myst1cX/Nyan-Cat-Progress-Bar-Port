@@ -2,7 +2,7 @@
 // @name         Spotifuck - Nyan Cat Progress Bar (Adapted from Spicetify)
 // @icon         https://i.ibb.co/YF1nLPfK/2eca7229-ca6a-4ad6-8653-b80a6a0f8586.png
 // @namespace    https://github.com/Myst1cX/Nyan-Cat-Progress-Bar-Port
-// @version      1.0.2.fork
+// @version      1.0.0.fork
 // @description  Nyan Cat Progress Bar Theme for Spotify
 // @author       kitbodega, Myst1cX (fork)
 // @match        https://open.spotify.com/*
@@ -13,6 +13,18 @@
 // @updateURL    https://raw.githubusercontent.com/Myst1cX/Nyan-Cat-Progress-Bar-Port/main/spotifuck-nyan-cat-progress-bar-theme.user.js
 // @downloadURL  https://raw.githubusercontent.com/Myst1cX/Nyan-Cat-Progress-Bar-Port/main/spotifuck-nyan-cat-progress-bar-theme.user.js
 // ==/UserScript==
+
+// UPDATE 5: THUMB HORIZONTAL POSITION FIX
+// Native range-input thumbs are positioned by the browser using their *declared* CSS
+// width, before any transform is applied - transforms only affect the rendered pixels,
+// not the positioning math. This thumb declared width:34px (transform:scale(0.8) only
+// shrunk it visually afterward), so at value=0 the browser centered it 17px in from the
+// track's left edge, vs. the base white ball's 6px (it declares width:12px) - an 11px
+// static rightward offset at 0:00, unrelated to any timing/sync issue. Now declares the
+// same 12px width as the white ball, so the two trace an identical horizontal path, and
+// uses a bigger transform:scale() to restore the original ~34x21 visual size (transform
+// doesn't affect the positioning math). margin-top recalculated for the new 7px declared
+// height against the UPDATE 3 track heights (8px/12px).
 
 // UPDATE 4: IMMEDIATE FILL SYNC VIA data-test-position
 // applyNyanToLyricsPlus() previously derived --nyan-fill purely from the Lyrics+ bar's
@@ -189,35 +201,52 @@
             #lyrics-plus-progress:focus::-moz-range-track {
                 height: 12px !important;
             }
+            /* UPDATE 5: THUMB HORIZONTAL POSITION FIX
+               Native <input type="range"> thumbs are positioned by the browser using
+               their *declared* width, not whatever a transform scales them to visually -
+               that math runs on the untransformed box, before the transform is applied.
+               The base (non-nyan) white ball declares width:12px, so at value=0 its
+               center sits 6px in from the track's left edge. This thumb previously
+               declared width:34px (with transform:scale(0.8) only shrinking it visually
+               afterward), so the browser centered it 17px in from the left edge instead -
+               an 11px static rightward offset at 0:00 (mirrored at the far end), nothing
+               to do with timing/sync. Now declares the same 12px width as the white ball
+               so the two trace an identical horizontal path, and scales up visually via
+               transform (which doesn't affect the positioning math) to restore the
+               original ~34x21 rendered size. Height is similarly declared small (7px,
+               close to the original 34:21 aspect ratio) and margin-top recalculated
+               against it - transform-scale keeps the visual center anchored to the
+               unscaled box's own center, so this stays vertically consistent with the
+               UPDATE 3 track-height fix above. */
             #lyrics-plus-progress::-webkit-slider-thumb {
                 background: ${SLIDER_IMG} !important;
                 background-size: contain !important;
-                width: 34px !important;
-                height: 21px !important;
-                margin-top: -6.5px !important;
+                width: 12px !important;
+                height: 7px !important;
+                margin-top: 0.5px !important;
                 border: none !important;
                 border-radius: 0 !important;
                 box-shadow: none !important;
                 opacity: 1 !important;
                 image-rendering: pixelated !important;
-                transform: scale(0.8) !important;
+                transform: scale(2.8333) !important;
                 transition: margin-top 0.1s cubic-bezier(0, 0, 0.2, 1) !important;
             }
             #lyrics-plus-progress:hover::-webkit-slider-thumb,
             #lyrics-plus-progress:focus::-webkit-slider-thumb {
-                margin-top: -4.5px !important;
+                margin-top: 2.5px !important;
             }
             #lyrics-plus-progress::-moz-range-thumb {
                 background: ${SLIDER_IMG} !important;
                 background-size: contain !important;
-                width: 34px !important;
-                height: 21px !important;
+                width: 12px !important;
+                height: 7px !important;
                 border: none !important;
                 border-radius: 0 !important;
                 box-shadow: none !important;
                 opacity: 1 !important;
                 image-rendering: pixelated !important;
-                transform: scale(0.8) !important;
+                transform: scale(2.8333) !important;
             }
         `;
         document.head.appendChild(style);
