@@ -14,6 +14,9 @@
 // @downloadURL  https://raw.githubusercontent.com/Myst1cX/Nyan-Cat-Progress-Bar-Port/main/spotifuck-nyan-cat-progress-bar-theme.user.js
 // ==/UserScript==
 
+// CREDITS: Spicetify's Nyan Cat Progress Bar Theme
+// CREDITS: kitbodega/Nyan-Cat-Progress-Bar-Port (original author of the userscript port)
+
 // UPDATE 5: THUMB HORIZONTAL POSITION FIX
 // Native range-input thumbs are positioned by the browser using their *declared* CSS
 // width, before any transform is applied - transforms only affect the rendered pixels,
