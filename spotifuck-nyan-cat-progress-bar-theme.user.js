@@ -24,7 +24,7 @@
 // same 12px width as the white ball, so the two trace an identical horizontal path, and
 // uses a bigger transform:scale() to restore the original ~34x21 visual size (transform
 // doesn't affect the positioning math). margin-top recalculated for the new 7px declared
-// height against the UPDATE 3 track heights (8px/12px).
+// height against the UPDATE 3 track heights (8px/12px). 
 
 // UPDATE 4: IMMEDIATE FILL SYNC VIA data-test-position
 // applyNyanToLyricsPlus() previously derived --nyan-fill purely from the Lyrics+ bar's
