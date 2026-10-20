@@ -2,7 +2,7 @@
 // @name         Spotifuck - Nyan Cat Progress Bar (Adapted from Spicetify)
 // @icon         https://i.ibb.co/YF1nLPfK/2eca7229-ca6a-4ad6-8653-b80a6a0f8586.png
 // @namespace    https://github.com/Myst1cX/Nyan-Cat-Progress-Bar-Port
-// @version      1.0.0.fork
+// @version      1.0.1.fork
 // @description  Nyan Cat Progress Bar Theme for Spotify
 // @author       kitbodega, Myst1cX (fork)
 // @match        https://open.spotify.com/*
@@ -21,10 +21,14 @@
 // This script had no logging at all. Inside the Spotifuck app (v1.54+) it now writes a few
 // lifecycle lines to the app's Logger (Settings > Logger) through AndBridge.dbgt, tagged
 // us.spotifuck-nyan-cat-progress-bar-theme (Source = userscripts, or search tag:us.spotifuck-nyan):
-// script start, base CSS injected, each rainbow-fill rule added (with the running rule count), and
+// script start, base CSS injected, the rainbow-fill rule added, and
 // the Lyrics+ seekbar being found / going away. Deliberately nothing from the 200ms poll or the
 // observers' every-tick paths. The app gates it (Settings > Debug Logging); outside the app, or on an
-// app build without dbgt, it is a no-op. No styling or behavior changed.
+// app build without dbgt, it is a no-op. One behavior fix (invisible in the UI): applyRainbowToFill() added an
+// identical `[data-nyancat="1"]` rule to its stylesheet every time it tagged a bar's inner div, and Spotify
+// re-creates that div as playback ticks, so the stylesheet grew by a rule about every second (the first version of
+// the logging above logged each one, which is how it showed). The rule is now added once; every tagged div
+// still matches it, so the look is the same.
 
 // UPDATE 5: THUMB HORIZONTAL POSITION FIX
 // Native range-input thumbs are positioned by the browser using their *declared* CSS
@@ -337,11 +341,17 @@
                 const inner = child.querySelector('div');
                 if (inner && !inner.dataset.nyancat) {
                     inner.dataset.nyancat = '1';
-                    fillRule.sheet.insertRule(
-                        `[data-nyancat="1"] { background: ${RAINBOW} !important; }`,
-                        fillRule.sheet.cssRules.length
-                    );
-                    appLog('rainbow fill applied to a bar (rules now ' + fillRule.sheet.cssRules.length + ')');
+                    // One rule covers every element tagged data-nyancat="1", so it only has to exist once.
+                    // This used to add an identical rule for every newly tagged element - and Spotify
+                    // re-creates a bar's inner div as playback ticks, so the stylesheet grew by a rule
+                    // roughly every second for as long as the page was open.
+                    if (fillRule.sheet.cssRules.length === 0) {
+                        fillRule.sheet.insertRule(
+                            `[data-nyancat="1"] { background: ${RAINBOW} !important; }`,
+                            0
+                        );
+                        appLog('rainbow fill rule added (one rule covers every bar tagged data-nyancat)');
+                    }
                 }
             }
         });
