@@ -18,7 +18,7 @@
 // CREDITS: kitbodega/Nyan-Cat-Progress-Bar-Port (original author of the userscript port)
 
 // UPDATE 6: APP LOGGER
-// This script had no logging at all. Inside the Spotifuck app (v1.54+) it now writes a few
+// This script had no logging at all. Inside the Spotifuck app (v1.52+) it now writes a few
 // lifecycle lines to the app's Logger (Settings > Logger) through AndBridge.dbgt, tagged
 // us.spotifuck-nyan-cat-progress-bar-theme (Source = userscripts, or search tag:us.spotifuck-nyan):
 // script start, base CSS injected, the rainbow-fill rule added, and
