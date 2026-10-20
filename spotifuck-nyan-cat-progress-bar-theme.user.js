@@ -2,7 +2,7 @@
 // @name         Spotifuck - Nyan Cat Progress Bar (Adapted from Spicetify)
 // @icon         https://i.ibb.co/YF1nLPfK/2eca7229-ca6a-4ad6-8653-b80a6a0f8586.png
 // @namespace    https://github.com/Myst1cX/Nyan-Cat-Progress-Bar-Port
-// @version      1.0.1.fork
+// @version      1.0.0.fork
 // @description  Nyan Cat Progress Bar Theme for Spotify
 // @author       kitbodega, Myst1cX (fork)
 // @match        https://open.spotify.com/*
